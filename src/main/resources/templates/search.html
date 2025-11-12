@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Buchsuche</title>
+</head>
+<body>
+<h1>Katalog-Suche</h1>
+
+<form th:action="@{/search}" method="post">
+    <label for="query">Suchbegriff:</label>
+    <input type="text" id="query" name="query" placeholder="Titel, Autor, ISBN">
+    <button type="submit">Suchen</button>
+</form>
+
+<h2>Suchergebnisse</h2>
+<table>
+    <thead>
+    <tr>
+        <th>Titel</th>
+        <th>Autor</th>
+        <th>ISBN</th>
+        <th>Aktion</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr>
+        <td colspan="4">Geben Sie einen Suchbegriff ein, um Resultate zu erhalten.</td>
+    </tr>
+    </tbody>
+</table>
+</body>
+</html>
