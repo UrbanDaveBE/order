@@ -24,7 +24,12 @@
     </tr>
     </thead>
     <tbody>
-    <tr>
+    <tr th:each="book : ${books}">
+    <td th:text="${book.title}"></td>
+    <td th:text="${book.author}"></td>
+    <td th:text="${book.isbn}"></td>
+    <td><button disabled>Hinzufügen (TODO)</button></td>
+    <tr th:if="${#lists.isEmpty(books)}">
         <td colspan="4">Geben Sie einen Suchbegriff ein, um Resultate zu erhalten.</td>
     </tr>
     </tbody>
