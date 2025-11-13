@@ -1,5 +1,7 @@
 package local.dev.order.controller;
 
+import local.dev.order.model.ShoppingCart;
+import local.dev.order.service.ShoppingCartService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -18,16 +20,19 @@ import java.util.stream.Collectors;
 public class OrderController {
 
     private final BookCatalogService bookCatalogService;
+    private final ShoppingCartService shoppingCartService;
 
     @Autowired
-    public OrderController(BookCatalogService bookCatalogService) {
+    public OrderController(BookCatalogService bookCatalogService, ShoppingCartService shoppingCartService) {
         this.bookCatalogService = bookCatalogService;
+        this.shoppingCartService = shoppingCartService;
     }
 
     // GET-Mapping zur Anzeige der Seite
     @GetMapping("/search")
     public String showSearchForm(Model model){
         model.addAttribute("book", Collections.emptyList());
+        model.addAttribute("cartCount", shoppingCartService.getShoppingCart().getItemCount());
         return "search";
     }
 
@@ -56,7 +61,29 @@ public class OrderController {
 
         model.addAttribute("books", searchResults);
         model.addAttribute("searchQuery", query);
-
+        model.addAttribute("cartCount", shoppingCartService.getShoppingCart().getItemCount());
         return "search";
     }
+
+    @PostMapping("/add")
+    public String addToCart(@RequestParam("isbn") String isbn, @RequestParam("query") String lastQuery){
+        Book bookToAdd = bookCatalogService.findBookByIsbn(isbn);
+
+        if(bookToAdd != null){
+            shoppingCartService.addBook(bookToAdd);
+            System.out.println("Buch zum Warenkorb hinzugefügt " + bookToAdd.getTitle());
+        }
+
+        return "redirect:/search";
+    }
+
+    @GetMapping("/cart")
+    public String showCart(Model model) {
+        // Ruft den Session-gebundenen Warenkorb ab
+        ShoppingCart cart = shoppingCartService.getShoppingCart();
+
+        model.addAttribute("cartItems", cart.getItems());
+        return "cart"; // Verweist auf die neue Thymeleaf-Datei: cart.html
+    }
+
 }

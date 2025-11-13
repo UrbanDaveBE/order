@@ -6,10 +6,13 @@
 </head>
 <body>
 <h1>Katalog-Suche</h1>
-
+<p>
+    Aktuelle Artikel im Warenkorb:
+    <a th:href="@{/cart}"><strong th:text="${cartCount}">0</strong> Artikel anzeigen</a>
+</p>
 <form th:action="@{/search}" method="post">
     <label for="query">Suchbegriff:</label>
-    <input type="text" id="query" name="query" placeholder="Titel, Autor, ISBN">
+    <input type="text" id="query" name="query" th:value="${searchQuery}" placeholder="Titel, Autor, ISBN">
     <button type="submit">Suchen</button>
 </form>
 
@@ -28,7 +31,13 @@
     <td th:text="${book.title}"></td>
     <td th:text="${book.author}"></td>
     <td th:text="${book.isbn}"></td>
-    <td><button disabled>Hinzufügen (TODO)</button></td>
+    <td>
+        <form th:action="@{/add}" method="post">
+            <input type="hidden" name="isbn" th:value="${book.isbn}">
+            <input type="hidden" name="query" th:value="${searchQuery}">
+            <button type="submits">Hinzufügen</button>
+        </form>
+    </td>
     <tr th:if="${#lists.isEmpty(books)}">
         <td colspan="4">Geben Sie einen Suchbegriff ein, um Resultate zu erhalten.</td>
     </tr>
