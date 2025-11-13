@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="de" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Ihr Warenkorb</title>
+    <style>
+        /* Einfache Styles für Übersichtlichkeit */
+        table { border-collapse: collapse; width: 80%; margin: 20px 0; }
+        th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+        th { background-color: #f2f2f2; }
+        .total { font-weight: bold; }
+    </style>
+</head>
+<body>
+<h1>Ihr Warenkorb</h1>
+
+<p><a th:href="@{/search}">Zurück zur Suche</a></p>
+
+<div th:if="${cartItems.isEmpty()}">
+    <p>Ihr Warenkorb ist leer.</p>
+</div>
+
+<div th:unless="${cartItems.isEmpty()}">
+    <table>
+        <thead>
+        <tr>
+            <th>Titel</th>
+            <th>Autor</th>
+            <th>ISBN</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="item : ${cartItems}">
+            <td th:text="${item.title}">Buch Titel</td>
+            <td th:text="${item.author}">Buch Autor</td>
+            <td th:text="${item.isbn}">978-XXXXX</td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+</body>
+</html>

@@ -43,4 +43,11 @@ public class BookCatalogService {
                 .retrieve()
                 .body(new ParameterizedTypeReference<List<Book>>() {});
     }
+
+    public Book findBookByIsbn(String isbn) {
+        return restClient.get()
+                .uri("/api/books/{isbn}",isbn)
+                .retrieve()
+                .body(Book.class);
+    }
 }
