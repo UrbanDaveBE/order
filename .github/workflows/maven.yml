@@ -16,10 +16,7 @@ on:
 
 env:
   DOCKER_IMAGE_NAME: ${{ github.repository }}
-  REGISTRY: ghcr.io
   
-  #FULL_IMAGE_NAME: ${{ secrets.DOCKER_USERNAME }}/${{ env.DOCKER_IMAGE_NAME }}:${{ github.run_number }}
-
 jobs:
   build:
 
