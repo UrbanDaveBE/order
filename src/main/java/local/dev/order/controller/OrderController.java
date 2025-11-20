@@ -28,6 +28,13 @@ public class OrderController {
         this.shoppingCartService = shoppingCartService;
     }
 
+    @GetMapping("/")
+    public String showCadabra(Model model){
+        model.addAttribute("allBooks",bookCatalogService.getAllBooks());
+        model.addAttribute("cartCount",shoppingCartService.getShoppingCart().getItemCount());
+        return "home"; // home.html anzeigen
+    }
+
     // GET-Mapping zur Anzeige der Seite
     @GetMapping("/search")
     public String showSearchForm(Model model){
@@ -66,22 +73,22 @@ public class OrderController {
     }
 
     @PostMapping("/add")
-    public String addToCart(@RequestParam("isbn") String isbn, @RequestParam("query") String lastQuery){
+    public String addToCart(@RequestParam("isbn") String isbn, @RequestParam("query") String lastQuery, Model model){
         Book bookToAdd = bookCatalogService.findBookByIsbn(isbn);
 
         if(bookToAdd != null){
             shoppingCartService.addBook(bookToAdd);
             System.out.println("Buch zum Warenkorb hinzugefügt " + bookToAdd.getTitle());
         }
-
-        return "redirect:/search";
+        model.addAttribute("cartCount", shoppingCartService.getShoppingCart().getItemCount());
+        return "redirect:/search?query="+lastQuery;
     }
 
     @GetMapping("/cart")
     public String showCart(Model model) {
         // Ruft den Session-gebundenen Warenkorb ab
         ShoppingCart cart = shoppingCartService.getShoppingCart();
-
+        model.addAttribute("cartCount", shoppingCartService.getShoppingCart().getItemCount());
         model.addAttribute("cartItems", cart.getItems());
         return "cart"; // Verweist auf die neue Thymeleaf-Datei: cart.html
     }
