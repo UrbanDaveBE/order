@@ -52,7 +52,6 @@ jobs:
       run: |
         # 1. Den vollständigen Namen konstruieren (Syntax ist notwendig!)
         FULL_TAG="${{ secrets.DOCKER_USERNAME }}/${{ env.DOCKER_IMAGE_NAME }}:${{ github.run_number }}"
-        LATEST_TAG="${{ secrets.DOCKER_USERNAME }}/${{ env.DOCKER_IMAGE_NAME }}:latest"
         
         echo "Building image $FULL_TAG..."
         
@@ -61,6 +60,5 @@ jobs:
           -Dspring-boot.build-image.imageName=${FULL_TAG} 
         
         # 3. Taggen und Pushen
-        docker tag ${FULL_TAG} ${LATEST_TAG}
+        docker tag ${FULL_TAG} 
         docker push ${FULL_TAG}
-        docker push ${LATEST_TAG}
