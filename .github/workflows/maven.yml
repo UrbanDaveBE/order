@@ -60,5 +60,4 @@ jobs:
           -Dspring-boot.build-image.imageName=${FULL_TAG} 
         
         # 3. Taggen und Pushen
-        docker tag ${FULL_TAG} 
         docker push ${FULL_TAG}
