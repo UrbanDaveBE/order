@@ -39,9 +39,8 @@ jobs:
 
     - name: Build with Maven
       run: ./mvnw spring-boot:build-image \
-            -Dspring-boot.build-image.imageName=${{ env.DOCKER_IMAGE_NAME }} \
-            -Dspring-boot.build-image.publish=true
-
+            -Dspring-boot.build-image.imageName=${{ env.DOCKER_IMAGE_NAME }}
+            
     - name: login to docker
       uses: docker/login-action@v3
       with:
