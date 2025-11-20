@@ -65,7 +65,7 @@ public class BookCatalogService {
                 .body(Book.class);
     }
 
-    public Object getAllBooks() {
+    public List<Book> getAllBooks() {
         return restClient.get()
                 .uri("/api/books")
                 .retrieve()
