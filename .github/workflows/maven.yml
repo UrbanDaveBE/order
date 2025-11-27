@@ -16,7 +16,7 @@ on:
   workflow_dispatch:
 
 env:
-  DOCKER_IMAGE_NAME: order
+  IMAGE_NAME: order
   
 jobs:
   build:
@@ -51,7 +51,7 @@ jobs:
     #- name: Publish Docker Image
     #  run: docker push ${{ env.DOCKER_IMAGE_NAME }}
     - name: Build
-      run: ./mvnw spring-boot:build-image -Dspring-boot.build-image.imageName=urbandave/order:${{ github.run_number }}
+      run: ./mvnw spring-boot:build-image -Dspring-boot.build-image.imageName=${{ secrets.DOCKER_USERNAME }}/${{ env.IMAGE_NAME }}:${{ github.run_number }}
     - name: Push
       run: docker push urbandave/order:${{ github.run_number }}
    # - name: Build, Tag and Push to Docker Hub
