@@ -1,11 +1,14 @@
 package local.dev.order.service;
 
+import io.github.resilience4j.retry.annotation.Retry;
 import local.dev.order.model.Book;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClient;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 @Service
@@ -33,7 +36,7 @@ public class BookCatalogService {
                 .build();
     }
 
-
+    @Retry(name = "catalogService", fallbackMethod = "fallbackSearchBooks")
     public List<Book> searchBooks(List<String> keywords) {
 
         StringBuilder queryParams = new StringBuilder();
@@ -64,11 +67,36 @@ public class BookCatalogService {
                 .retrieve()
                 .body(Book.class);
     }
-
+    @Retry(name = "catalogService", fallbackMethod = "fallbackGetAllBooks")
     public List<Book> getAllBooks() {
         return restClient.get()
                 .uri("/api/books")
                 .retrieve()
                 .body(new ParameterizedTypeReference<List<Book>>() {});
+    }
+
+    // Fallback Methoden
+    public List<Book> fallbackSearchBooks(List<String> keywords, Throwable t) {
+        System.err.println("FALLBACK searchBooks ausgelöst durch: " + t.getMessage());
+        // Wir geben eine leere Liste zurück, damit die Webseite nicht abstürzt
+        return Collections.emptyList();
+    }
+
+    public List<Book> fallbackGetAllBooks(Throwable t) {
+        System.err.println("FALLBACK getAllBooks ausgelöst durch: " + t.getMessage());
+
+        // Damit du auf der Webseite siehst, dass der Fallback greift, bauen wir ein "Dummy Buch"
+        List<Book> fallbackList = new ArrayList<>();
+
+        // Achtung: Passe den Konstruktor an dein Book-Model an!
+        // Ich nehme an: ISBN, Title, Author, Price
+        Book errorBook = new Book();
+        errorBook.setIsbn("000-FALLBACK");
+        errorBook.setTitle("Der Catalog Service ist nicht erreichbar");
+        errorBook.setAuthor("System Admin");
+
+        fallbackList.add(errorBook);
+
+        return fallbackList;
     }
 }
