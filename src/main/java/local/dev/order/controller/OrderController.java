@@ -14,7 +14,6 @@ import local.dev.order.service.BookCatalogService;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Controller
 public class OrderController {
@@ -37,60 +36,84 @@ public class OrderController {
 
     // GET-Mapping zur Anzeige der Seite
     @GetMapping("/search")
-    public String showSearchForm(Model model){
-        model.addAttribute("book", Collections.emptyList());
+    public String showSearchForm(@RequestParam(value = "query", required = false) List<String> query, Model model) {
+        List<Book> searchResults = Collections.emptyList();
+
+        if (query != null && !query.isEmpty()) {
+            List<String> splitKeywords = query.stream()
+                    .flatMap(q -> Arrays.stream(q.split("[\\s+,]")))
+                    .filter(q -> !q.isBlank())
+                    .toList();
+
+            searchResults = bookCatalogService.searchBooks(splitKeywords);
+
+            model.addAttribute("searchQuery", String.join(" ", splitKeywords));
+        } else {
+            model.addAttribute("searchQuery", "");
+        }
+
+        model.addAttribute("books", searchResults);
+        model.addAttribute("shoppingCartService", shoppingCartService);
         model.addAttribute("cartCount", shoppingCartService.getShoppingCart().getItemCount());
+
         return "search";
     }
 
-    // POST-Mapping zur Verarbeitung der Suchanfrage
     @PostMapping("/search")
-    public String handleSearch(@RequestParam(required = false, name="query") String query, Model model){
-        List<Book> searchResults;
-        List<String> keywords;
-
-        if(!query.isEmpty() && query != null) {
-
-            // mehrfachsuche
-            keywords = Arrays.stream(query.trim().split("\\s+"))
-                    .filter(k -> !k.isEmpty())
-                    .toList();
-
-            if (!keywords.isEmpty()) {
-                searchResults = bookCatalogService.searchBooks(keywords);
-            } else {
-                searchResults = Collections.emptyList();
-            }
-        } else {
-            searchResults = Collections.emptyList();
-        }
-
-
-        model.addAttribute("books", searchResults);
-        model.addAttribute("searchQuery", query);
-        model.addAttribute("cartCount", shoppingCartService.getShoppingCart().getItemCount());
-        return "search";
+    public String handleSearch(@RequestParam(required = false, name="query") String query) {
+        return buildSearchRedirect(query);
     }
 
     @PostMapping("/add")
-    public String addToCart(@RequestParam("isbn") String isbn, @RequestParam("query") String lastQuery, Model model){
+    public String addToCart(@RequestParam("isbn") String isbn,
+                            @RequestParam("query") String lastQuery) {
+
         Book bookToAdd = bookCatalogService.findBookByIsbn(isbn);
 
         if(bookToAdd != null){
             shoppingCartService.addBook(bookToAdd);
             System.out.println("Buch zum Warenkorb hinzugefügt " + bookToAdd.getTitle());
         }
-        model.addAttribute("cartCount", shoppingCartService.getShoppingCart().getItemCount());
-        return "redirect:/search?query="+lastQuery;
+
+        return buildSearchRedirect(lastQuery);
     }
 
     @GetMapping("/cart")
     public String showCart(Model model) {
-        // Ruft den Session-gebundenen Warenkorb ab
         ShoppingCart cart = shoppingCartService.getShoppingCart();
         model.addAttribute("cartCount", shoppingCartService.getShoppingCart().getItemCount());
         model.addAttribute("cartItems", cart.getItems());
         return "cart"; // Verweist auf die neue Thymeleaf-Datei: cart.html
     }
 
+    @PostMapping("/remove")
+    public String removeFromCart(@RequestParam("isbn") String isbn,
+                                 @RequestParam(required = false, name="query") String lastQuery) {
+
+        shoppingCartService.removeBookByIsbn(isbn);
+
+        return buildSearchRedirect(lastQuery);
+    }
+
+    private String buildSearchRedirect(String query) {
+        if (query == null || query.isBlank()) {
+            return "redirect:/search";
+        }
+
+        String[] keywords = query.trim().split("\\s+");
+
+        StringBuilder redirectPath = new StringBuilder("redirect:/search?");
+
+        for (int i = 0; i < keywords.length; i++) {
+            String encodedKeyword = java.net.URLEncoder.encode(keywords[i], java.nio.charset.StandardCharsets.UTF_8);
+
+            redirectPath.append("query=").append(encodedKeyword);
+
+            if (i < keywords.length - 1) {
+                redirectPath.append("&");
+            }
+        }
+
+        return redirectPath.toString();
+    }
 }

@@ -1,6 +1,5 @@
 package local.dev.order.model;
 
-import local.dev.order.model.Book;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -17,5 +16,13 @@ public class ShoppingCart {
 
     public int getItemCount(){
         return items.size();
+    }
+
+    public boolean contains(String isbn) {
+        return items.stream().anyMatch(item -> item.getIsbn().equals(isbn));
+    }
+
+    public void removeItem(String isbn) {
+        this.items.removeIf(item -> item.getIsbn().equals(isbn));
     }
 }

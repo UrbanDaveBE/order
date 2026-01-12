@@ -18,4 +18,8 @@ public class ShoppingCartService {
     public ShoppingCart getShoppingCart() {
         return this.shoppingCart;
     }
+
+    public void removeBookByIsbn(String isbn) {
+        this.shoppingCart.removeItem(isbn);
+    }
 }

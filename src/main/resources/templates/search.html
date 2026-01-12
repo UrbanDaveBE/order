@@ -43,16 +43,25 @@
                     <td th:text="${book.title}"></td>
                     <td th:text="${book.author}"></td>
                     <td th:text="${book.isbn}"></td>
-            <td>
-                <form th:action="@{/add}" method="post">
-                    <input type="hidden" name="isbn" th:value="${book.isbn}">
-                    <input type="hidden" name="query" th:value="${searchQuery}">
-                    <button type="submit"
-                            th:id="'add-to-cart-' + ${book.isbn}"
-                            class="btn btn-success btn-sm w-100">
-                        Zum Warenkorb hinzufügen
-                    </button>                </form>
-            </td>
+                    <td>
+                        <form th:if="${!shoppingCartService.getShoppingCart().contains(book.isbn)}"
+                              th:action="@{/add}" method="post">
+                            <input type="hidden" name="isbn" th:value="${book.isbn}">
+                            <input type="hidden" name="query" th:value="${searchQuery}">
+                            <button type="submit"
+                                    th:id="'add-to-cart-' + ${book.isbn}"
+                                    class="btn btn-success btn-sm w-100">Zum Warenkorb hinzufügen</button>
+                        </form>
+
+                        <form th:if="${shoppingCartService.getShoppingCart().contains(book.isbn)}"
+                              th:action="@{/remove}" method="post">
+                            <input type="hidden" name="isbn" th:value="${book.isbn}">
+                            <input type="hidden" name="query" th:value="${searchQuery}">
+                            <button type="submit"
+                                    th:id="'remove-from-cart-' + ${book.isbn}"
+                                    class="btn btn-danger btn-sm w-100">Aus Warenkorb entfernen</button>
+                        </form>
+                    </td>
             <tr th:if="${#lists.isEmpty(books)}">
                 <td colspan="4" class="text-center text-muted">Geben Sie einen Suchbegriff ein, um Resultate zu erhalten.</td>
             </tr>
