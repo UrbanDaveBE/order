@@ -36,6 +36,12 @@ jobs:
     - name: Set Execute Permission for Maven Wrapper
       run: chmod +x mvnw
       
+    - name: Install Playwright Browsers
+      run: ./mvnw exec:java -e -Dexec.mainClass=com.microsoft.playwright.CLI -Dexec.args="install --with-deps"
+
+    - name: Run Tests (Verify)
+      run: ./mvnw verify
+      
     - name: login to docker
       uses: docker/login-action@v3
       with:
