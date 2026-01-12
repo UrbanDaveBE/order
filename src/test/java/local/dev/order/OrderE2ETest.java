@@ -1,19 +1,36 @@
 package local.dev.order;
 
 import com.microsoft.playwright.*;
+import local.dev.order.model.Book;
+import local.dev.order.service.BookCatalogService;
 import org.junit.jupiter.api.*;
+
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
+
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.anyList;
+import static org.mockito.BDDMockito.given;
+
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class OrderE2ETest {
     @LocalServerPort
     private int port;
 
+    @MockitoBean
+    private BookCatalogService bookCatalogService;
+
     @Test
     void testSearchAndAdd() {
+// GIVEN: Wenn der Service nach irgendwelchen Keywords gefragt wird...
+        Book mockBook = new Book("978-0-13-235088-4", "Clean Architecture", "Robert C. Martin");
+        given(bookCatalogService.searchBooks(anyList())).willReturn(List.of(mockBook));
+        // Wichtig: findByIsbn muss auch gemockt werden, damit "add" funktioniert!
+        given(bookCatalogService.findBookByIsbn("978-0-13-235088-4")).willReturn(mockBook);
         try (Playwright playwright = Playwright.create()) {
             boolean isHeadless = true;
 
