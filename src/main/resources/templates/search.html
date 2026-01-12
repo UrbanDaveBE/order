@@ -21,7 +21,7 @@
             <input type="text" id="query" name="query" th:value="${searchQuery}" placeholder="Titel, Autor, ISBN" class="form-control form-control-lg">
             </div>
             <div class="col-md-4">
-                <button type="submit" class="btn btn-primary btn-lg w-100">
+                <button type="submit" id="search-button" class="btn btn-primary btn-lg w-100">
                     <i class="fas fa-search me-2"></i>Suchen</button>
             </div>
         </form>
@@ -47,8 +47,11 @@
                 <form th:action="@{/add}" method="post">
                     <input type="hidden" name="isbn" th:value="${book.isbn}">
                     <input type="hidden" name="query" th:value="${searchQuery}">
-                    <button type="submits" class="btn btn-success btn-sm w-100">Zum Warenkorb hinzufügen</button>
-                </form>
+                    <button type="submit"
+                            th:id="'add-to-cart-' + ${book.isbn}"
+                            class="btn btn-success btn-sm w-100">
+                        Zum Warenkorb hinzufügen
+                    </button>                </form>
             </td>
             <tr th:if="${#lists.isEmpty(books)}">
                 <td colspan="4" class="text-center text-muted">Geben Sie einen Suchbegriff ein, um Resultate zu erhalten.</td>
