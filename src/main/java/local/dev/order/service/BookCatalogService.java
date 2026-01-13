@@ -28,11 +28,10 @@ public class BookCatalogService {
      * Konstruktor, der die Basis-URL über @Value injiziert.
      * Der Wert wird aus application.properties oder der Docker Compose Environment gelesen.
      */
-    public BookCatalogService(@Value("${catalog.base.url}") String catalogBaseUrl) {
-
-        // 🛠️ NEU: Der RestClient wird mit der injizierten URL initialisiert
-        this.restClient = RestClient.builder()
-                .baseUrl(catalogBaseUrl) // Nutzt die dynamische URL (z.B. http://catalog:8080)
+    public BookCatalogService(RestClient.Builder builder,
+                              @Value("${catalog.base.url}") String catalogBaseUrl) {
+        this.restClient = builder
+                .baseUrl(catalogBaseUrl)
                 .build();
     }
 

@@ -8,7 +8,16 @@
 <section class="container mt-5">
     <h2>Entdecken Sie neue Bücher</h2>
     <p>Herzlich willkommen! Nutzen Sie die Navigation, um mit der Suche zu beginnen.</p>
-    <div class="row">
+
+    <div th:if="${!allBooks.isEmpty() and allBooks[0].isbn == '000-FALLBACK'}" class="alert alert-danger" role="alert">
+        <h4 class="alert-heading">⚠️ Service nicht verfügbar</h4>
+        <p>Der Buch-Katalog antwortet momentan nicht. Es können keine Bücher angezeigt werden.</p>
+        <hr>
+        <p class="mb-0">Bitte versuchen Sie es später erneut.</p>
+    </div>
+
+    <div class="row" th:unless="${!allBooks.isEmpty() and allBooks[0].isbn == '000-FALLBACK'}">
+
         <div th:each="book : ${allBooks}" class="col-md-4 mb-4">
             <div class="card">
                 <div class="card-body">
@@ -18,7 +27,8 @@
 
                     <form th:action="@{/add}" method="post">
                         <input type="hidden" name="isbn" th:value="${book.isbn}">
-                        <input type="hidden" name="query" value=""> <button type="submit" class="btn btn-sm btn-primary">Zum Warenkorb</button>
+                        <input type="hidden" name="query" value="">
+                        <button type="submit" class="btn btn-sm btn-primary">Zum Warenkorb</button>
                     </form>
                 </div>
             </div>
