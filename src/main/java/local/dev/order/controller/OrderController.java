@@ -12,7 +12,6 @@ import local.dev.order.model.Book;
 import local.dev.order.service.BookCatalogService;
 
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
 @Controller
@@ -37,7 +36,7 @@ public class OrderController {
     // GET-Mapping zur Anzeige der Seite
     @GetMapping("/search")
     public String showSearchForm(@RequestParam(value = "query", required = false) List<String> query, Model model) {
-        List<Book> searchResults = Collections.emptyList();
+        List<Book> searchResults;
 
         if (query != null && !query.isEmpty()) {
             List<String> splitKeywords = query.stream()
@@ -49,6 +48,7 @@ public class OrderController {
 
             model.addAttribute("searchQuery", String.join(" ", splitKeywords));
         } else {
+            searchResults = bookCatalogService.getAllBooks();
             model.addAttribute("searchQuery", "");
         }
 
